@@ -44,6 +44,7 @@ import (
 type Renderer interface {
 	// Render generates a PNG from data
 	Render(data []byte) []byte
+	RenderWithBG(data []byte, background color.NRGBA) []byte
 }
 
 type identicon struct {
@@ -80,6 +81,10 @@ func New7x7(key []byte) Renderer {
 }
 
 func (icon *identicon) Render(data []byte) []byte {
+	return icon.RenderWithBG(data, color.NRGBA{0xf0, 0xf0, 0xf0, 0xff})
+}
+
+func (icon *identicon) RenderWithBG(data []byte, background color.NRGBA) []byte {
 
 	icon.h.Reset()
 	icon.h.Write(data)
@@ -93,7 +98,7 @@ func (icon *identicon) Render(data []byte) []byte {
 	}
 	h >>= 24
 
-	img := image.NewPaletted(image.Rect(0, 0, maxX, maxY), color.Palette{color.NRGBA{0xf0, 0xf0, 0xf0, 0xff}, nrgba})
+	img := image.NewPaletted(image.Rect(0, 0, maxX, maxY), color.Palette{background, nrgba})
 
 	sqx := 0
 	sqy := 0
